@@ -95,10 +95,21 @@ malformed-JSON paths actually trigger and recover rather than just looking corre
 
 ## Assumptions made
 
-- No API key was available for this exercise, so the default path is `mock_llm_call()` per
-  the assignment's instructions. The code is structured so `--live` is a one-flag switch to
+- No API key was available for this exercise, so the default path is `mock_llm_call()` 
+  The code is structured so `--live` is a one-flag switch to
   a real Anthropic call.
 - Output format: CSV (matching the input format), with `category`, `urgency`, `summary`
   appended as the last three columns.
 - "High urgency" tickets trigger the alert; I didn't add alerting for repeated failures,
   though that'd be a natural next step (see Monitoring above).
+
+## A note on classification accuracy
+
+Running the script confirmed urgency detection is reliable (8/8 correct across the
+sample tickets), but category classification is occasionally off — e.g. ticket #1
+("Can't log in") was tagged `other` instead of `bug`, because the mock's category
+logic is simple keyword matching, not real language understanding. This is expected
+and by design: the mock's job is to exercise the pipeline (retries, validation,
+alerting) end to end, not to classify tickets accurately. A real LLM call via
+`--live` would resolve this kind of nuance, since it reasons about meaning rather
+than matching keywords.
